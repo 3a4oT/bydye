@@ -25,16 +25,16 @@ jobs:
          DEBIAN_FRONTEND: "noninteractive"
          DEBCONF_NONINTERACTIVE_SEEN: true
         run: |
-        apt-get -q update \
-        && apt-get -q dist-upgrade -y \
-        && apt-get -q install -y \
-        ca-certificates \
-        tzdata \
-        # If your app or its dependencies import FoundationNetworking, also install `libcurl4`.
-       libcurl4 \
-      # If your app or its dependencies import FoundationXML, also install `libxml2`.
-       libxml2 \
-       && rm -r /var/lib/apt/lists/*
+          apt-get -q update \
+          && apt-get -q dist-upgrade -y \
+          && apt-get -q install -y \
+          ca-certificates \
+          tzdata \
+# If your app or its dependencies import FoundationNetworking, also install `libcurl4`.
+          libcurl4 \
+# If your app or its dependencies import FoundationXML, also install `libxml2`.
+          libxml2 \
+          && rm -r /var/lib/apt/lists/*
 
       - name: Run Tests and generate test coverage data
         run: swift test --sanitize=thread
