@@ -19,7 +19,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
       - name: Install dependencies
         env:
          DEBIAN_FRONTEND: "noninteractive"
@@ -35,6 +34,5 @@ jobs:
 # If your app or its dependencies import FoundationXML, also install `libxml2`.
           libxml2 \
           && rm -r /var/lib/apt/lists/*
-
       - name: Run Tests and generate test coverage data
         run: swift test --sanitize=thread
