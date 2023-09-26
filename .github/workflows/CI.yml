@@ -17,6 +17,7 @@ jobs:
     services:
       postgres:
         image: postgres:15-alpine
+        volumes: [ 'pgrunshare:/var/run/postgresql' ]
         ports:
           - 5432:5432
         # Provide the password for postgres
@@ -61,7 +62,7 @@ jobs:
 
       - name: Run DB migrations
         env:
-            DATABASE_HOST: localhost
+            DATABASE_HOST: postgres
             DATABASE_NAME: vapor_database
             DATABASE_USERNAME: vapor_username
             DATABASE_PASSWORD: vapor_password
