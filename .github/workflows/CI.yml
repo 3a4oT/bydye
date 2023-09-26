@@ -62,11 +62,11 @@ jobs:
 
       - name: Run DB migrations
         env:
-            DATABASE_HOST: postgres
+            DATABASE_HOST: postgres #same name as an `service`
             DATABASE_NAME: vapor_database
             DATABASE_USERNAME: vapor_username
             DATABASE_PASSWORD: vapor_password
-        run: swift run App migrate
+        run: swift run App migrate --yes
 
       - name: Run App Tests
         run: swift test --sanitize=thread
