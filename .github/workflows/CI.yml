@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore: 
+      - '**.md'
+
+jobs:
+  test-ubuntu:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - swift:5.9-jammy
+    services:
+      postgres:
+        image: postgres:15-alpine
+        volumes: [ 'pgrunshare:/var/run/postgresql' ]
+        ports:
+          - 5432:5432
+        # Provide the password for postgres
+        env:
+          POSTGRES_USER: vapor_username
+          POSTGRES_PASSWORD: vapor_password
+          POSTGRES_DB: vapor_database
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    container: ${{ matrix.image }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+         path: |
+          .build/artifacts
+          .build/checkouts
+          .build/repositories
+          .build/workspace-state.json
+         key: test-spm-${{ runner.os }}-${{ hashFiles('Package.swift', 'Package.resolved') }}
+
+      - name: Install dependencies
+        env:
+         DEBIAN_FRONTEND: "noninteractive"
+         DEBCONF_NONINTERACTIVE_SEEN: true
+        run: |
+          apt-get -q update \
+          && apt-get -q dist-upgrade -y \
+          && apt-get -q install -y \
+          ca-certificates \
+          tzdata \
+          libcurl4 \
+          libxml2 \
+          && rm -r /var/lib/apt/lists/*
+
+      - name: Run DB migrations
+        env:
+            DATABASE_HOST: postgres #same name as an `service`
+            DATABASE_NAME: vapor_database
+            DATABASE_USERNAME: vapor_username
+            DATABASE_PASSWORD: vapor_password
+        run: swift run App migrate --yes
+
+      - name: Run App Tests
+        run: swift test --sanitize=thread
