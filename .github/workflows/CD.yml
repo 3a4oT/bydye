@@ -40,7 +40,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       
-      - name: Connect to DigitalOcean
+      - name: Connect to DigitalOcean and deploy via docker compose
         uses: appleboy/ssh-action@v1.0.0
         with:
          host: ${{ secrets.DROPLET_HOST }}
@@ -48,5 +48,10 @@ jobs:
          key: ${{ secrets.DROPLET_SSH_PRIVATE_KEY }}
          port: ${{ secrets.DROPLET_PORT }}
          script: |
-          whoami
-          ls -a
+          cd bydye/
+          docker compose pull
+          docker compose up -d app
+          docker container prune -f
+          docker image prune -f
+          docker network prune -f
+          docker volume prune -f
