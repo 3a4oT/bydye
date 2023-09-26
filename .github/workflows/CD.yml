@@ -18,6 +18,16 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
+
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+         path: |
+          .build/artifacts
+          .build/checkouts
+          .build/repositories
+          .build/workspace-state.json
+         key: test-spm-${{ runner.os }}-${{ hashFiles('Package.swift', 'Package.resolved') }}
       
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
