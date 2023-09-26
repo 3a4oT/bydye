@@ -35,6 +35,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+         path: |
+          .build/artifacts
+          .build/checkouts
+          .build/repositories
+          .build/workspace-state.json
+         key: test-spm-${{ runner.os }}-${{ hashFiles('Package.swift', 'Package.resolved') }
+
       - name: Install dependencies
         env:
          DEBIAN_FRONTEND: "noninteractive"
@@ -49,12 +59,12 @@ jobs:
           libxml2 \
           && rm -r /var/lib/apt/lists/*
 
-      - name: Run migrations
+      - name: Run DB migrations
         env:
           POSTGRES_USER: vapor_username
           POSTGRES_PASSWORD: vapor_password
           POSTGRES_DB: vapor_database
         run: swift run App migrate
 
-      - name: Run Tests
+      - name: Run App Tests
         run: swift test --sanitize=thread
