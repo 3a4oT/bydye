@@ -14,6 +14,22 @@ jobs:
       matrix:
         image:
           - swift:5.9-jammy
+    services:
+      postgres:
+        image: postgres
+        ports:
+          - 5432:5432
+        # Provide the password for postgres
+        env:
+          POSTGRES_USER: vapor_username
+          POSTGRES_PASSWORD: vapor_password
+          POSTGRES_DB: vapor_database
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     container: ${{ matrix.image }}
     steps:
       - name: Checkout code
@@ -33,5 +49,12 @@ jobs:
           libxml2 \
           && rm -r /var/lib/apt/lists/*
 
-      - name: Run Tests and generate test coverage data
+      - name: Run migrations
+        env:
+          POSTGRES_USER: vapor_username
+          POSTGRES_PASSWORD: vapor_password
+          POSTGRES_DB: vapor_database
+        run: swift run App migrate
+
+      - name: Run Tests
         run: swift test --sanitize=thread
