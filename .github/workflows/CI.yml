@@ -8,7 +8,7 @@ on:
 
 jobs:
   test-ubuntu:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04 #same as on Digital Ocean Droplet
     strategy:
       fail-fast: false
       matrix:
@@ -63,6 +63,7 @@ jobs:
       - name: Run DB migrations
         env:
             DATABASE_HOST: postgres #same name as an `service`
+            DATABASE_PORT: 5432 # same as defined in `service`
             DATABASE_NAME: vapor_database
             DATABASE_USERNAME: vapor_username
             DATABASE_PASSWORD: vapor_password
