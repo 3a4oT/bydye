@@ -16,7 +16,7 @@ jobs:
           - swift:5.9-jammy
     services:
       postgres:
-        image: postgres
+        image: postgres:15-alpine
         ports:
           - 5432:5432
         # Provide the password for postgres
@@ -61,9 +61,10 @@ jobs:
 
       - name: Run DB migrations
         env:
-          POSTGRES_USER: vapor_username
-          POSTGRES_PASSWORD: vapor_password
-          POSTGRES_DB: vapor_database
+            DATABASE_HOST: localhost
+            DATABASE_NAME: vapor_database
+            DATABASE_USERNAME: vapor_username
+            DATABASE_PASSWORD: vapor_password
         run: swift run App migrate
 
       - name: Run App Tests
