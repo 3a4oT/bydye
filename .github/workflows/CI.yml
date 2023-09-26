@@ -43,7 +43,7 @@ jobs:
           .build/checkouts
           .build/repositories
           .build/workspace-state.json
-         key: test-spm-${{ runner.os }}-${{ hashFiles('Package.swift', 'Package.resolved') }
+         key: test-spm-${{ runner.os }}-${{ hashFiles('Package.swift', 'Package.resolved') }}
 
       - name: Install dependencies
         env:
